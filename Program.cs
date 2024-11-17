@@ -31,8 +31,9 @@ namespace SnakeGame
             Console.WriteLine("          ┌────────────────────────┘");
             Console.WriteLine("          │ Movement -> Arrow Keys");
             Console.WriteLine("          │ Exit at any time with ESC");
-            Console.WriteLine("                                     ");
-            Console.WriteLine("            Press any key to start   ");
+            Console.WriteLine("          │                          ");
+            Console.WriteLine("          │ Press any key to start   ");
+            Console.WriteLine("          └──                        ");
 
 
 
