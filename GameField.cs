@@ -126,6 +126,56 @@ namespace SnakeGame
             fieldLayout[newFruitPosition.Y, newFruitPosition.X] = _symbolSettings.fruit;
         }
 
+        internal bool SnakeHeadWillCollide(SnakeDirection currentDirection)
+        {
+            int deltaX = 0;
+            int deltaY = 0;
+
+            switch (currentDirection)
+            {
+                case SnakeDirection.Right:
+                    deltaX = 1;
+                    break;
+
+                case SnakeDirection.Left:
+                    deltaX = -1;
+                    break;
+
+                case SnakeDirection.Down:
+                    deltaY = 1;
+                    break;
+
+                case SnakeDirection.Up:
+                    deltaY = -1;
+                    break;
+
+                default:
+                    return false;
+            }
+
+            int newHeadX = snakeHeadPosition.X + deltaX;
+            int newHeadY = snakeHeadPosition.Y + deltaY;
+
+            if (newHeadX < 0 || newHeadX >= fieldLayout.GetLength(1))
+            {
+                return true;
+            }
+
+            if (newHeadY < 0 || newHeadY >= fieldLayout.GetLength(0))
+            {
+                return true;
+            }
+
+            if (snakeTailPositions.Contains(new Point(newHeadX, newHeadY)))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+
         private List<Point> GetEmptyPositions()
         {
             int fieldWidth = fieldLayout.GetLength(1);

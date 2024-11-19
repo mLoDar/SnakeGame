@@ -6,8 +6,22 @@
 
 namespace SnakeGame
 {
+    internal enum SnakeDirection
+    {
+        Up,
+        Down,
+        Left,
+        Right
+    }
+
+
+
     internal class Program
     {
+        private static SnakeDirection _currentDirection = SnakeDirection.Right;
+
+
+
         static void Main()
         {
         LabelMethodBeginning:
