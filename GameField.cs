@@ -8,11 +8,15 @@ namespace SnakeGame
 {
     internal class Gamefield
     {
-        private static readonly ApplicationSettings.Symbols _symbolSettings = new();
+        private readonly ApplicationSettings.Symbols _symbolSettings = new();
 
         internal char[,] fieldLayout = new char[0, 0];
 
-        private static readonly Random numberGenerator = new();
+        private readonly Random numberGenerator = new();
+
+        internal int snakeLength = 0;
+        internal Point snakeHeadPosition = new(0, 0);
+        internal LinkedList<Point> snakeTailPositions = new();
 
 
 
@@ -47,6 +51,9 @@ namespace SnakeGame
             fieldLayout[snakeStartY, snakeStartX] = _symbolSettings.snakeHead;
 
             fieldLayout[snakeStartY, snakeStartX + 2] = _symbolSettings.fruit;
+
+            snakeLength = 1;
+            snakeHeadPosition = new Point(snakeStartX, snakeStartY);
         }
 
         internal void Display()
@@ -64,6 +71,8 @@ namespace SnakeGame
             Console.WriteLine("          ┌────────────────────────┘");
 
             Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine($"          Score: {snakeLength} ");
             Console.WriteLine();
             Console.WriteLine();
 
@@ -93,6 +102,8 @@ namespace SnakeGame
                     }
 
                     Console.Write(currentChar);
+
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
 
                 Console.WriteLine("│");
