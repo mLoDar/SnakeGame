@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Drawing;
 
 
 
@@ -21,6 +22,7 @@ namespace SnakeGame
         private static SnakeDirection _currentDirection = SnakeDirection.Right;
 
         private static readonly ApplicationSettings.Game _gameSettings = new();
+        private static readonly ApplicationSettings.Symbols _symbolSettings = new();
         private static readonly ApplicationSettings.Playfield _playfieldSettings = new();
 
         private static Gamefield _gameField;
@@ -78,13 +80,13 @@ namespace SnakeGame
 
 
 
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            CancellationTokenSource cancellationTokenSource = new();
             CancellationToken cancellationToken = cancellationTokenSource.Token;
 
-            Task mainGame = MainGameLoop(cancellationToken);
-            Task readingTask = ReadDirection(cancellationToken);
+            Task gameLoop = GameLoop(cancellationToken);
+            Task listenForNewDirection = ListenForNewDirection(cancellationToken);
 
-            await Task.WhenAny(mainGame, readingTask);
+            await Task.WhenAny(gameLoop, listenForNewDirection);
 
             cancellationTokenSource.Cancel();
 
@@ -105,19 +107,20 @@ namespace SnakeGame
             goto LabelMethodBeginning;
         }
 
-        private static async Task MainGameLoop(CancellationToken cancellationToken)
+        private static async Task GameLoop(CancellationToken cancellationToken)
         {
             while (_gameEnded == false)
             {
-                // Todo: Move snake
+                MoveSnake();
 
-                // Todo: Display updated game field
+                Console.SetCursorPosition(0, 4);
+                _gameField.Display();
 
                 await Task.Delay(_gameSettings.speedInMilliseconds, cancellationToken);
             }
         }
 
-        private static async Task ReadDirection(CancellationToken cancellationToken)
+        private static async Task ListenForNewDirection(CancellationToken cancellationToken)
         {
             while (_gameEnded == false)
             {
@@ -132,7 +135,116 @@ namespace SnakeGame
                     continue;
                 }
 
-                // Todo: Read key and change direction
+
+
+                ConsoleKey pressedKey = Console.ReadKey(true).Key;
+
+                ChangeSnakeDirection(pressedKey);
+            }
+        }
+
+        private static void MoveSnake()
+        {
+            int snakeHeadX = _gameField.snakeHeadPosition.X;
+            int snakeHeadY = _gameField.snakeHeadPosition.Y;
+
+            bool collectedFruit = false;
+
+            int deltaX = 0;
+            int deltaY = 0;
+
+            switch (_currentDirection)
+            {
+                case SnakeDirection.Right:
+                    deltaX = 1;
+                    break;
+
+                case SnakeDirection.Left:
+                    deltaX = -1;
+                    break;
+
+                case SnakeDirection.Down:
+                    deltaY = 1;
+                    break;
+
+                case SnakeDirection.Up:
+                    deltaY = -1;
+                    break;
+
+                default:
+                    break;
+            }
+
+            int newHeadX = snakeHeadX + deltaX;
+            int newHeadY = snakeHeadY + deltaY;
+
+
+
+            if (_gameField.fieldLayout[newHeadY, newHeadX].Equals(_symbolSettings.fruit))
+            {
+                collectedFruit = true;
+                _gameField.snakeLength++;
+            }
+
+            if (_gameField.CollisionDetected(_currentDirection) == true)
+            {
+                _gameEnded = true;
+                return;
+            }
+
+
+
+            _gameField.snakeHeadPosition = new Point(newHeadX, newHeadY);
+            _gameField.snakeTailPositions.AddFirst(new Point(snakeHeadX, snakeHeadY));
+
+            _gameField.fieldLayout[newHeadY, newHeadX] = _symbolSettings.snakeHead;
+            _gameField.fieldLayout[snakeHeadY, snakeHeadX] = _symbolSettings.snakeBody;
+
+
+
+            if (collectedFruit == true)
+            {
+                _gameField.PlaceNewFruit();
+                return;
+            }
+
+            _gameField.RemoveSnakeTail();
+        }
+
+        private static void ChangeSnakeDirection(ConsoleKey pressedKey)
+        {
+            switch (pressedKey)
+            {
+                case ConsoleKey.RightArrow:
+                    if (_currentDirection != SnakeDirection.Left)
+                    {
+                        _currentDirection = SnakeDirection.Right;
+                    }
+                    break;
+
+                case ConsoleKey.LeftArrow:
+                    if (_currentDirection != SnakeDirection.Right)
+                    {
+                        _currentDirection = SnakeDirection.Left;
+                    }
+                    break;
+
+                case ConsoleKey.DownArrow:
+                    if (_currentDirection != SnakeDirection.Up)
+                    {
+                        _currentDirection = SnakeDirection.Down;
+                    }
+                    break;
+
+                case ConsoleKey.UpArrow:
+                    if (_currentDirection != SnakeDirection.Down)
+                    {
+                        _currentDirection = SnakeDirection.Up;
+                    }
+                    break;
+
+                default:
+                    break;
             }
         }
     }

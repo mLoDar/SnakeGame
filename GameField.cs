@@ -126,7 +126,7 @@ namespace SnakeGame
             fieldLayout[newFruitPosition.Y, newFruitPosition.X] = _symbolSettings.fruit;
         }
 
-        internal bool SnakeHeadWillCollide(SnakeDirection currentDirection)
+        internal bool CollisionDetected(SnakeDirection currentDirection)
         {
             int deltaX = 0;
             int deltaY = 0;
@@ -172,6 +172,14 @@ namespace SnakeGame
             }
 
             return false;
+        }
+
+        internal void RemoveSnakeTail()
+        {
+            Point snakeTail = snakeTailPositions.Last();
+
+            fieldLayout[snakeTail.Y, snakeTail.X] = _symbolSettings.empty;
+            snakeTailPositions.RemoveLast();
         }
 
 
