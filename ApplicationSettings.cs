@@ -4,8 +4,8 @@
     {
         internal class Playfield
         {
-            internal readonly int height = 25;
-            internal readonly int width = 25;
+            internal readonly int height = 10;
+            internal readonly int width = 30;
         }
 
         internal class Game
